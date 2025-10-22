@@ -1,0 +1,80 @@
+openapi: 3.1.0
+info:
+  title: ClipNotes API
+  version: 1.0.0
+servers:
+  - url: https://knightless-pete-caseous.ngrok-free.dev
+paths:
+  /notes:
+    post:
+      operationId: createNote
+      summary: Create a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  description: The note content
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional tags
+                topic:
+                  type: string
+                  description: Optional topic
+      responses:
+        '200':
+          description: Note created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  content:
+                    type: string
+                  tags:
+                    type: array
+                    items:
+                      type: string
+    get:
+      operationId: listNotes
+      summary: List recent notes
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 5
+          description: Number of notes to return
+      responses:
+        '200':
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        saved_at:
+                          type: string
+

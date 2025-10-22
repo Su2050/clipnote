@@ -1,0 +1,30 @@
+### 健康检查
+GET http://localhost:8000/healthz
+
+### 创建笔记
+POST http://localhost:8000/notes
+Authorization: Bearer dev-token-please-change
+Content-Type: application/json
+X-User-Id: localdev
+
+{
+  "content": "这是一个测试片段：从 Apps SDK 保存片段到本地 JSON/Markdown 文件。",
+  "tags": ["MCP","AppsSDK"],
+  "topic": "示例",
+  "source": {"thread_title": "测试会话", "msg_id": "abc123"},
+  "context_before": [
+    {"role": "user", "text": "帮我总结一下 Apps SDK 是什么"},
+    {"role": "assistant", "text": "Apps SDK 让第三方应用以 MCP 连接到 ChatGPT"},
+    {"role": "user", "text": "那怎么把上一条保存到我的笔记？"}
+  ]
+}
+
+### 列出最近
+GET http://localhost:8000/notes?limit=5
+Authorization: Bearer dev-token-please-change
+X-User-Id: localdev
+
+### 搜索
+GET http://localhost:8000/notes/search?q=Apps&limit=10
+Authorization: Bearer dev-token-please-change
+X-User-Id: localdev
