@@ -4,7 +4,7 @@ from typing import List, Optional, Dict
 from datetime import datetime
 import json
 from ..models import Note, NoteIn
-from ..utils import short_title, dedup_key, extract_keywords
+from ..utils import short_title, dedup_key, extract_keywords, generate_ai_title
 
 class LocalStorage:
     def __init__(self, base_dir: str, tenant: str):
@@ -26,7 +26,9 @@ class LocalStorage:
         return p / f"{note_id}.md"
 
     def save(self, note_in: NoteIn, now: datetime, suggested_id: Optional[str] = None) -> Note:
-        title = short_title(note_in.content)
+        # 尝试使用 AI 生成标题，如果未启用则使用默认策略
+        ai_title = generate_ai_title(note_in.content)
+        title = ai_title if ai_title else short_title(note_in.content)
         tags = list(note_in.tags or []) or extract_keywords(note_in.content, topk=5)
         dd = dedup_key(note_in.content, now)
         note_id = suggested_id or dd.replace('@','-')
