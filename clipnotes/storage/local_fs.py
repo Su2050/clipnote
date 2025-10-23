@@ -70,7 +70,8 @@ class LocalStorage:
         for y in sorted([p for p in tenant_dir.glob('*') if p.is_dir() and p.name.isdigit()], reverse=True):
             for m in sorted([p for p in y.glob('*') if p.is_dir()], reverse=True):
                 for d in sorted([p for p in m.glob('*') if p.is_dir()], reverse=True):
-                    for f in sorted([p for p in d.glob('*.json')], reverse=True):
+                    # 按文件修改时间排序，而不是文件名
+                    for f in sorted([p for p in d.glob('*.json')], key=lambda x: x.stat().st_mtime, reverse=True):
                         try:
                             data = json.loads(f.read_text(encoding='utf-8'))
                             items.append(Note.model_validate(data))
