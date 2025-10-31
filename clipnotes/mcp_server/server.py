@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import Optional, Literal, List
 from pydantic import BaseModel
-import httpx, os
+import httpx
+import os
 from mcp.server.fastmcp import FastMCP, Context
 from ..models import NoteIn, ContextMsg, SourceRef
 from ..config import settings
 
-API_URL = os.getenv("NOTES_API_URL", "http://localhost:8000")
-API_TOKEN = os.getenv("NOTES_API_TOKEN", "dev-token-please-change")
+API_URL = settings.notes_api_url
+API_TOKEN = settings.notes_api_token
 
 mcp = FastMCP(name=settings.mcp_server_name, stateless_http=settings.mcp_stateless_http)
 

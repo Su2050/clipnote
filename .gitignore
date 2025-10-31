@@ -33,7 +33,9 @@ ehthumbs.db
 Thumbs.db
 
 # Logs
+logs/
 *.log
+clipnotes.log
 /tmp/
 
 # Privacy policy repo

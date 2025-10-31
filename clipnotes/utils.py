@@ -1,6 +1,55 @@
 import re, hashlib, base64
 from datetime import datetime
 import jieba.analyse as ja
+import logging
+
+logger = logging.getLogger(__name__)
+
+def sanitize_filename(name: str, max_length: int = 100) -> str:
+    """
+    清理文件名/ID，防止路径注入攻击
+    
+    Args:
+        name: 原始文件名/ID
+        max_length: 最大长度限制
+    
+    Returns:
+        清理后的安全文件名
+    """
+    if not name:
+        return "untitled"
+    
+    # 移除路径分隔符和危险字符
+    name = re.sub(r'[<>:"|?*\x00-\x1f]', '', name)
+    # 移除目录遍历尝试
+    name = name.replace('..', '').replace('/', '').replace('\\', '')
+    # 移除首尾空格和点
+    name = name.strip(' .')
+    # 限制长度
+    name = name[:max_length]
+    
+    # 如果清理后为空，返回默认值
+    return name or "untitled"
+
+def sanitize_tenant(tenant: str, max_length: int = 50) -> str:
+    """
+    清理租户ID，防止路径注入
+    
+    Args:
+        tenant: 原始租户ID
+        max_length: 最大长度限制
+    
+    Returns:
+        清理后的安全租户ID
+    """
+    if not tenant:
+        return "default"
+    
+    # 只允许字母、数字、下划线、连字符
+    tenant = re.sub(r'[^a-zA-Z0-9_-]', '', tenant)
+    tenant = tenant[:max_length]
+    
+    return tenant or "default"
 
 def slugify(text: str, maxlen: int = 120) -> str:
     """清理文本，保留有效字符"""
@@ -67,10 +116,12 @@ def dedup_key(content: str, ts: datetime) -> str:
     return f"{b22}@{minute}"
 
 def extract_keywords(text: str, topk: int = 5):
+    """提取关键词，带错误处理和日志"""
     try:
         kws = ja.extract_tags(text, topK=topk, withWeight=False, allowPOS=())
         return [k for k in kws if len(k.strip()) > 1]
-    except Exception:
+    except Exception as e:
+        logger.warning(f"关键词提取失败: {e}", exc_info=True)
         return []
 
 def generate_ai_title(content: str) -> str:
